@@ -5,7 +5,7 @@ General Asynchronous and Synchronous I/O library
 
 A general network I/O library for Linux, Windows & BSD servers
 
-features
+Features
 
 - C10K library. Tested at 60k echo requests
 - Asynchronous I/O: epoll, kqueue, iocp
