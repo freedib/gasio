@@ -1,4 +1,4 @@
-GASIO library
+# GASIO library
 
 General Asynchronous and Synchronous I/O library 
 
@@ -6,20 +6,21 @@ A general network I/O library for Linux, Windows & BSD servers
 
 Provides the TCP layer for game servers and Web servers
 
-Features
+# Features
 - C10K library. Tested at 60k echo requests
 - Asynchronous I/O: epoll, kqueue, iocp
 - Synchronous I/O: threads
 - Deferred treatment for epoll/kqueue (eg database access)
 - Very simple interface using callback interface
 
-Companion programs
+# Companion programs
 - Echo server based on GASIO
 - Echo tester for GASIO
 
-Note
-Why do not use existing libraries like libeio, libev, boost or libowfat? Because they were huge libraries and none handled iocp efficiently
+# History
+This project started as a replacement for IIS/Apache in a real-time internet quiz. In this quiz, 20 000 persons sent their response at the same moment and the winner had to be announced 15 secondes later. Web server are not made to handle a lot of simultaneous short dynamic requests. The answer is put a lot of servers or use an efficient requests server.  
+The clear answer was epoll/kqueue/iocp but I did'nt want to limit to a server technology. We never know where we  can be hosted. Existing libraries like libeio, libev, boost or libowfat could have been nice but are huge and none handled iocp efficiently. So here is my library which get ideas from lua hich asynchronous model is great
 
-TODO
+# TODO
 - Documentation which will be issued shortly
 - A simpler echo program. This one was used to test all possibilities of the library
