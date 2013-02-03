@@ -1,3 +1,3 @@
 Echo Copyright 2013
 
-Didier Bertrand - all parts of the project, originator
+Didier Bertrand - originator of the project
