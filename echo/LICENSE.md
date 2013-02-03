@@ -1,4 +1,4 @@
-    GASIO - General Asynchronous and Synchronous I/O library.
+    Echo server based on GASIO
     Copyright (C) 2013  GASIO Authors listed in AUTHORS file
 
     This program is free software: you can redistribute it and/or modify
