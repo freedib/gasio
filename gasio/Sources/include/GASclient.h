@@ -28,7 +28,7 @@ enum // callback operation
 #define GAS_CI_BUFFER_MARK(cb)      (cb->buffer + cb->mark)
 #define GAS_CI_BUFFER_END(cb)       (cb->buffer + cb->tail)
 #define GAS_CI_DATA_SIZE(cb)        (cb->tail - cb->head)
-#define GAS_CI_BUFFER_SPACE(cb)     (cb->alloced - cb->tail)
+#define GAS_CI_BUFFER_SPACE(cb)     (cb->allocated - cb->tail)
 #define GAS_CI_GROWED_SIZE(cb)      (cb->tail - cb->mark)
 #define GAS_CI_WANED_SIZE(cb)       (cb->head - cb->mark)
 #define GAS_CI_GROW_BUFFER(cb,n)    (cb->tail += n)
@@ -43,8 +43,9 @@ typedef struct GAS_CLIENT_BUFFER gas_client_buffer;
 typedef struct GAS_CLIENT_CONFIG gas_client_config;
 
 struct GAS_CLIENT_BUFFER {
-	char *buffer;	// 1 byte more than alloced
-	int alloced;
+	char *buffer;	// 1 byte more than allocated
+	int allocated;
+	int limit;
 	int head;
 	int mark;		// previous tail after a write
 	int tail;
@@ -55,6 +56,8 @@ struct GAS_CLIENT_CONFIG {
 	int   use_write_events;		// GAS_TRUE if checking write events. faster if we don't check write events (on kqueue)
 	int   read_buffer_size;		// default read buffer size
 	int   write_buffer_size;	// default write buffer size
+	int   read_buffer_limit;	// maximum read buffer size
+	int   write_buffer_limit;	// maximum write buffer size
 };
 
 
@@ -94,7 +97,7 @@ extern "C" {
 void               gas_preset_client_config (void *tpi);
 gas_client_info*   gas_create_client        (void *tpi, gas_socket_t socket);
 gas_client_info*   gas_delete_client        (gas_client_info *ci, int want_callback);
-gas_client_buffer* gas_create_client_buffer (int size);
+gas_client_buffer* gas_create_client_buffer (int size, int limit);
 gas_client_buffer* gas_delete_client_buffer ();
 int   gas_trim_buffer        (gas_client_buffer *cb);
 char* gas_realloc_buffer     (gas_client_buffer *cb);

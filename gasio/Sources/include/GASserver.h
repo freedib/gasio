@@ -18,7 +18,7 @@ void*  gas_create_server   (void* parent, char* address, int port, char* network
 int    gas_start_server    (void* tpi);
 void*  gas_stop_server     (void* tpi);
 int    gas_server_is_alive (void* tpi);
-void   gas_set_defaults    (void* tpi, int use_write_events, int read_buffer_size, int write_buffer_size);
+void   gas_set_defaults    (void* tpi, int use_write_events, int read_buffer_size, int write_buffer_size, int read_buffer_limit);
 
 int    gas_enqueue_message (gas_client_info* ci, int operation);
 int    gas_write_message   (gas_client_info* ci, char *message);

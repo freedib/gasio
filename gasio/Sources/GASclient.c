@@ -23,6 +23,8 @@ gas_preset_client_config (void *tpi)
 
 	ti->cc.read_buffer_size  = 150;			// minimum 32 bytes for windows
 	ti->cc.write_buffer_size = 500;			// minimum 32 bytes for windows
+	ti->cc.read_buffer_limit = -1;			// no limit on read buffer size
+	ti->cc.write_buffer_limit = -1;			// no limit on write buffer size
 }
 
 gas_client_info *
@@ -48,16 +50,16 @@ gas_create_client (void *tpi, gas_socket_t socket)
 	ci->error       = GAS_FALSE;
 
 	// create buffers. write size larger than read size for web applications
-	if ((ci->eb = gas_create_client_buffer(0)) == NULL) {
+	if ((ci->eb = gas_create_client_buffer(0,GAS_DEFAULT)) == NULL) {
 		free(ci);
 		return NULL;
 	}
-	if ((ci->wb = gas_create_client_buffer(ci->cc->write_buffer_size)) == NULL) {
+	if ((ci->wb = gas_create_client_buffer(ci->cc->write_buffer_size,ci->cc->write_buffer_limit)) == NULL) {
 		gas_delete_client_buffer (ci->eb);
 		free(ci);
 		return NULL;
 	}
-	if ((ci->rb = gas_create_client_buffer(ci->cc->read_buffer_size)) == NULL) {
+	if ((ci->rb = gas_create_client_buffer(ci->cc->read_buffer_size,ci->cc->read_buffer_limit)) == NULL) {
 		gas_delete_client_buffer (ci->wb);
 		gas_delete_client_buffer (ci->eb);
 		free(ci);
@@ -142,21 +144,22 @@ gas_delete_client (gas_client_info *ci, int want_callback)
 }
 
 gas_client_buffer *
-gas_create_client_buffer (int size)
+gas_create_client_buffer (int size, int limit)
 {
 	gas_client_buffer* cb;
-	cb          = calloc (1, sizeof(gas_client_buffer));
-	cb->head    = 0;
-	cb->mark    = 0;
-	cb->tail    = 0;
-	cb->alloced = size;
+	cb        = calloc (1, sizeof(gas_client_buffer));
+	cb->head  = 0;
+	cb->mark  = 0;
+	cb->tail  = 0;
+	cb->allocated = size;
+	cb->limit     = limit;
 	if (size > 0) {
-		cb->buffer  = (char*) malloc(cb->alloced+1);
+		cb->buffer  = (char*) malloc(cb->allocated+1);
 		if (!cb->buffer) {
 			gas_error_message("No memory\n");
 			return NULL;
 		}
-		cb->buffer[cb->alloced] = '\0';
+		cb->buffer[cb->allocated] = '\0';
 	}
 	else
 		cb->buffer = NULL;
@@ -168,7 +171,7 @@ gas_delete_client_buffer (gas_client_buffer *cb)
 {
 	if (cb==NULL)
 		return NULL;
-	if (cb->alloced>0 && cb->buffer)	// don't free external buffers
+	if (cb->allocated>0 && cb->buffer)	// don't free external buffers
 		free (cb->buffer);
 	if (cb)
 		free (cb);
@@ -194,8 +197,8 @@ gas_trim_buffer (gas_client_buffer* cb)
 char *
 gas_realloc_buffer (gas_client_buffer* cb)
 {
-	if (cb->alloced == cb->tail)
-		gas_realloc_buffer_for (cb, cb->alloced);	// double buffer
+	if (cb->allocated == cb->tail)
+		gas_realloc_buffer_for (cb, cb->allocated);	// double buffer
 	return cb->buffer;
 }
 
@@ -206,8 +209,10 @@ gas_realloc_buffer_for (gas_client_buffer* cb, int size)
 	char *buffer;
 	if (GAS_CI_BUFFER_SPACE(cb) > size)
 		return cb->buffer;				// enough space
-	cb->alloced += size - GAS_CI_BUFFER_SPACE(cb);
-	buffer = (char*)realloc(cb->buffer, cb->alloced+1);
+	cb->allocated += size - GAS_CI_BUFFER_SPACE(cb);
+	if (cb->limit>0 && cb->allocated>cb->limit)
+		cb->allocated = cb->limit;
+	buffer = (char*)realloc(cb->buffer, cb->allocated+1);
 	if (!buffer)
 		gas_error_message("No memory (realloc)\n");
 	else
@@ -221,7 +226,7 @@ gas_append_buffer (gas_client_buffer* cb, char* string)
 	int size = strlen(string);
 	gas_realloc_buffer_for (cb, size);
 	if (size > GAS_CI_BUFFER_SPACE(cb))
-		size = cb->alloced-cb->tail;		// was not able to allocate new buffer
+		size = cb->allocated-cb->tail;		// was not able to allocate new buffer
 	strncpy (GAS_CI_BUFFER_END(cb), string, size);
 	GAS_CI_GROW_BUFFER (cb, size);
 	*GAS_CI_BUFFER_END(cb) = '\0';				// if string was trimmed
