@@ -69,31 +69,31 @@ client_callback (gas_client_info *ci, int op) {
 	int extra_text = 0;
 	switch (op) {
 	case GAS_CLIENT_CREATE:
-		gas_debug_message (GAS_IO, "client_create\n");
+		gas_debug_message (GAS_CLIENT, "client_create\n");
 		break;
 	case GAS_CLIENT_DELETE:
-		gas_debug_message (GAS_IO, "client_delete\n");
+		gas_debug_message (GAS_CLIENT, "client_delete\n");
 		break;
 	case GAS_CLIENT_READ:
-		gas_debug_message (GAS_IO, "client_read\n");
+		gas_debug_message (GAS_CLIENT, "client_read\n");
 		if (test_queues && strstr(gas_get_buffer_data(ci->rb),"hello")!=NULL)
 			if (gas_enqueue_message (ci, GAS_OP_READ) >= 0)			// should depend on request type: heavy requests
 				return;
 		// was not able to enqueue; continue as normal read
 		/* no break */
 	case GAS_CLIENT_DEFFERED_READ:
-		gas_debug_message (GAS_IO, "client_deffered_read\n");
+		gas_debug_message (GAS_CLIENT, "client_deffered_read\n");
 		ci->step = 0;
 		gas_write_message (ci, gas_get_buffer_data (ci->rb));
 		break;
 	case GAS_CLIENT_WRITE:
-		gas_debug_message (GAS_IO, "client_write\n");
+		gas_debug_message (GAS_CLIENT, "client_write\n");
 		if (test_queues && ci->step==1 && gas_enqueue_message (ci, GAS_OP_WRITE) >= 0)	// test to enqueue write of static_text
 			return;
 		// was not able to enqueue; continue as normal read
 		/* no break */
 	case GAS_CLIENT_DEFFERED_WRITE:
-		gas_debug_message (GAS_IO, "client_deffered_write\n");
+		gas_debug_message (GAS_CLIENT, "client_deffered_write\n");
 		switch (++ci->step) {
 		case 1:
 			if (extra_text)

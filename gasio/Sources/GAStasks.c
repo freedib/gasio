@@ -146,7 +146,7 @@ gas_enqueue_task (gas_client_info *ci)
 	GAS_THREADS_INFO *ti = (GAS_THREADS_INFO *)ci->tpi;
 	if (!ti->allow_tasks)
 		return -1;
-	gas_debug_message (GAS_IO, "Task push\n");
+	gas_debug_message (GAS_CLIENT, "Task push\n");
 
 	if (gas_get_running_task_threads() < 1)
 		gas_start_one_task_thread();
@@ -184,7 +184,7 @@ gas_tasks_thread (void *data)			// data == td
 			break;
 		}
 
-		gas_debug_message (GAS_IO, "Task pop\n");
+		gas_debug_message (GAS_CLIENT, "Task pop\n");
 		if (ci->operation == GAS_OP_READ)
 			gas_do_callback (ci, GAS_CLIENT_DEFFERED_READ);
 		else if (ci->operation == GAS_OP_WRITE)

@@ -73,7 +73,7 @@ gas_create_client (void *tpi, gas_socket_t socket)
 	ci->write_pending = GAS_FALSE;
 
 	// add client to the end of clients linked list. used to close connections while stopping server
-	gas_debug_message (GAS_IO, "ci list +> %08x < %08x > %08x == %08x <> %08x\n",
+	gas_debug_message (GAS_CLIENT, "ci list +> %08x < %08x > %08x == %08x <> %08x\n",
 		ci->previous, ci, ci->next, ti->first_client, ti->last_client);
 	gas_mutex_lock (&ti->lock);
 	ci->previous = NULL;
@@ -89,7 +89,7 @@ gas_create_client (void *tpi, gas_socket_t socket)
 
 	ci->step = -1;
 	ci->context = NULL;
-	gas_debug_message (GAS_IO, "ci list +< %08x < %08x > %08x == %08x <> %08x\n",
+	gas_debug_message (GAS_CLIENT, "ci list +< %08x < %08x > %08x == %08x <> %08x\n",
 			ci->previous, ci, ci->next, ti->first_client, ti->last_client);
 
 	return ci;
@@ -103,7 +103,7 @@ gas_delete_client (gas_client_info *ci, int want_callback)
 
 	// adjust clients linked list. used to close connections while stopping server
 	GAS_THREADS_INFO *ti = (GAS_THREADS_INFO *) ci->tpi;
-	gas_debug_message (GAS_IO, "ci list -> %08x < %08x > %08x == %08x <> %08x\n",
+	gas_debug_message (GAS_CLIENT, "ci list -> %08x < %08x > %08x == %08x <> %08x\n",
 		ci->previous, ci, ci->next, ti->first_client, ti->last_client);
 
 	if (want_callback)
@@ -127,7 +127,7 @@ gas_delete_client (gas_client_info *ci, int want_callback)
 		ci->next->previous = ci->previous;
 	}
 	gas_mutex_unlock (&ti->lock);
-	gas_debug_message (GAS_IO, "ci list -< %08x < %08x > %08x == %08x <> %08x\n",
+	gas_debug_message (GAS_CLIENT, "ci list -< %08x < %08x > %08x == %08x <> %08x\n",
 		ci->previous, ci, ci->next, ti->first_client, ti->last_client);
 
 	// release client's data

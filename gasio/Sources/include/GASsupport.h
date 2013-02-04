@@ -7,8 +7,9 @@
 
 #define GAS_NONE     0
 #define GAS_IO       1
-#define GAS_DETAIL   2
-#define GAS_ALWAYS   3
+#define GAS_CLIENT   2
+#define GAS_DETAIL   3
+#define GAS_ALWAYS   4
 
 
 #ifdef __cplusplus
