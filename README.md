@@ -18,7 +18,7 @@ Provides the TCP layer for game servers and Web servers
 - Echo tester for GASIO
 
 # History
-This project started as a replacement for IIS/Apache in a real-time internet quiz. In this quiz, 20 000 persons sent their response at the same moment and the winner had to be announced 15 secondes later. Web server are not made to handle a lot of simultaneous short dynamic requests. The answer is put a lot of servers or use an efficient requests server.  
+This library was first intended for a game server. It should be able to handle > 10 000 simulataneous requests and compute a result within 10 seconds. Web server are not made to handle a lot of simultaneous short dynamic requests. The answer is put a lot of servers or use an efficient requests server.  
 The clear answer was epoll/kqueue/iocp but I did'nt want to limit to a server technology. We never know where we  can be hosted. Existing libraries like libeio, libev, boost or libowfat could have been nice but are huge and none handled iocp efficiently. So here is my library which get ideas from lua hich asynchronous model is great
 
 # TODO
