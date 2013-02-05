@@ -20,8 +20,8 @@ GAS_TRUE or GAS_FALSE if error
 Create a gasio server. Many servers can be created using different ports
 
 **Synopsis**  
-`void* gas_create_server (void* parent, char* address, int port, char* networks,`
-`      void (*callback)(gas_client_info* ci,int op), int worker_threads)`
+`void* gas_create_server (void* parent, char* address, int port, char* networks, void (*callback)(gas_client_info* ci,int op),`
+`int worker_threads)`
 
 **Arguments**
 <table>
