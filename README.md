@@ -19,7 +19,7 @@ Provides the TCP layer for game servers and Web servers
 
 # History
 This library was first intended for a game server. It should be able to handle > 10 000 simultaneous requests and compute a result within 10 seconds. Web server are not made to handle a lot of simultaneous short dynamic requests. The answer is put a lot of servers or use an efficient requests server.  
-The clear answer was epoll/kqueue/iocp but I didn't want to limit to a server technology. We never know where we  can be hosted. Existing libraries like libeio, libev, boost or libowfat could have been nice but are huge and none handled iocp efficiently. So here is my library which get ideas from lua which asynchronous model is great
+The clear answer was epoll/kqueue/iocp but I didn't want to limit to a server technology. We never know where we  can be hosted. Existing libraries like libeio, libev, boost or libowfat could have been nice but are huge and none handled iocp efficiently. So here is my library which get ideas from node.js who's asynchronous model is great
 
 # TODO
 - Documentation which will be issued shortly
