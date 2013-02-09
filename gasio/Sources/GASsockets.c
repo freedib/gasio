@@ -40,14 +40,14 @@ gas_socket_t
 gas_create_server_socket (char* address, int port) {
 	gas_socket_t server_socket;
 	if ((server_socket = gas_create_socket()) == INVALID_SOCKET)
-		return -1;
+		return GAS_ERROR;
 	if (gas_bind_socket (server_socket, address, port) < 0) {
 		server_socket = gas_close_socket (server_socket);
-		return -1;
+		return GAS_ERROR;
 	}
 	if (gas_start_listening (server_socket) < 0) {
 		server_socket = gas_close_socket (server_socket);
-		return -1;
+		return GAS_ERROR;
 	}
 	return server_socket;
 }
@@ -80,7 +80,7 @@ gas_close_socket (gas_socket_t a_socket)
 #else  // WIN32
 		close (a_socket);
 #endif // WIN32
-	return -1;
+	return GAS_ERROR;
 }
 
 void
@@ -217,7 +217,7 @@ gas_do_write (gas_client_info *ci)
 	gas_debug_message (GAS_IO, "gas_do_write. can_write==%d\n", ci->can_write);
 	if (!ci->can_write && !ci->write_pending) {
 		errno = EAGAIN;
-		return -1;
+		return GAS_ERROR;
 	}
 
 	ci->callback_has_written = GAS_TRUE;
@@ -278,7 +278,7 @@ gas_query_write (gas_client_info *ci)
 			return gas_do_write (ci);
 	}
 	errno = EAGAIN;
-	return -1;
+	return GAS_ERROR;
 }
 
 void

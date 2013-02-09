@@ -376,7 +376,7 @@ gas_do_write_iocp (gas_client_info* ci)
 		gas_debug_message (GAS_IO, "gas_do_write_iocp. can_write==%d\n", ci->can_write);
 		if (!ci->can_write) {
 			errno = EAGAIN;
-			return -1;
+			return GAS_ERROR;
 		}
 		gas_start_writing (ci);
 		return 0;

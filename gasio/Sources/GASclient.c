@@ -21,10 +21,10 @@ gas_preset_client_config (void *tpi)
 
 	ti->cc.use_write_events  = GAS_TRUE;		// set GAS_TRUE to check polling events on writes. a little bit faster for kqueues
 
-	ti->cc.read_buffer_size  = 150;			// minimum 32 bytes for windows
-	ti->cc.write_buffer_size = 500;			// minimum 32 bytes for windows
-	ti->cc.read_buffer_limit = -1;			// no limit on read buffer size
-	ti->cc.write_buffer_limit = -1;			// no limit on write buffer size
+	ti->cc.read_buffer_size   = 150;			// minimum 32 bytes for windows
+	ti->cc.write_buffer_size  = 500;			// minimum 32 bytes for windows
+	ti->cc.read_buffer_limit  = GAS_DEFAULT;	// no limit on read buffer size
+	ti->cc.write_buffer_limit = GAS_DEFAULT;	// no limit on write buffer size
 }
 
 gas_client_info *

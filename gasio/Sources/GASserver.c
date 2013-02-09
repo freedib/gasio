@@ -53,7 +53,7 @@ gas_server_is_alive (void* tpi)
 }
 
 void
-gas_set_defaults (void* tpi, int use_write_events, int read_buffer_size, int write_buffer_size, int read_buffer_limit)
+gas_set_defaults (void* tpi, int use_write_events, int read_buffer_size, int write_buffer_size, int read_buffer_limit, int write_buffer_limit)
 {
 	GAS_THREADS_INFO *ti = (GAS_THREADS_INFO *)tpi;
 	if (use_write_events != GAS_DEFAULT)
@@ -64,6 +64,8 @@ gas_set_defaults (void* tpi, int use_write_events, int read_buffer_size, int wri
 		ti->cc.write_buffer_size = write_buffer_size;
 	if (read_buffer_limit != GAS_DEFAULT)
 		ti->cc.read_buffer_limit = read_buffer_limit;
+	if (write_buffer_limit != GAS_DEFAULT)
+		ti->cc.write_buffer_limit = write_buffer_limit;
 }
 
 int

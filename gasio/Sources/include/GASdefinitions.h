@@ -29,8 +29,9 @@
 
 // common definitions
 
-#define GAS_FALSE 0
-#define GAS_TRUE  1
+#define GAS_FALSE    0
+#define GAS_TRUE     1
+#define GAS_ERROR   -1
 #define GAS_DEFAULT -1
 
 // OS specific definitions

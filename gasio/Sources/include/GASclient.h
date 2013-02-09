@@ -64,17 +64,17 @@ struct GAS_CLIENT_CONFIG {
 // the use_ variables can be set during creation callback by application
 struct GAS_CLIENT_INFO {
 	void* tpi;					// pointer to the server
-	gas_client_config *cc;			// reference to common clients config (tpi->cc)
+	gas_client_config *cc;		// reference to common clients config (tpi->cc)
 	int use_write_events;		// if GAS_FALSE, may be changed to GAS_TRUE if write would block
-	gas_socket_t socket;			// client socket
+	gas_socket_t socket;		// client socket
 	struct in_addr remote_addr;	// client address
 	int remote_port;			// client remote port
 	struct in_addr local_addr;	// server address
 	int local_port;				// server port
 	int thread_id;				// reference to the thread number for debugging purpose
-	gas_client_buffer* rb;			// read buffer
-	gas_client_buffer* wb;			// write buffer
-	gas_client_buffer* eb;			// external write buffer
+	gas_client_buffer* rb;		// read buffer
+	gas_client_buffer* wb;		// write buffer
+	gas_client_buffer* eb;		// external write buffer
 	int   use_eb;				// used internally by gas_do_write and gas_start_writing/gas_write_completed
 	int   read_end;				// GAS_TRUE if no more data
 	int   error;				// GAS_TRUE if I/O error

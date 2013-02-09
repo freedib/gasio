@@ -204,7 +204,7 @@ int main (int argc, char *const argv[])
 			if ((tps[it] = (void *) gas_create_server (NULL, address[it], ports[it], networks[it], client_callback, worker_threads[it])) == NULL)
 				exit (1);
 			// change default client configuration if required. eg default buffer size
-			gas_set_defaults (tps[it], GAS_DEFAULT, GAS_DEFAULT, GAS_DEFAULT);
+			gas_set_defaults (tps[it], GAS_DEFAULT, GAS_DEFAULT, GAS_DEFAULT, GAS_DEFAULT, GAS_DEFAULT);
 			if (! gas_start_server (tps[it]))
 				exit (1);
 		}

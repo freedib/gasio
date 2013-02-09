@@ -36,7 +36,7 @@ gas_error_message (const char *format, ...)
 	va_start (args, format);
 	vfprintf (stderr, format, args);
 	va_end (args);
-	return -1;			// arg for exit on fatal errors
+	return GAS_ERROR;			// arg for exit on fatal errors
 
 	// évaluer __LINE__: fprintf (stderr, "Error %d in CreateIoCompletionPort in line %d\n", err, __LINE__));
 }

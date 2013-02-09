@@ -105,7 +105,7 @@ gas_stop_one_task_thread()
 		gas_enqueue_task (NULL);
 }
 
-// return -1 if error or number of tasks pushed
+// return GAS_ERROR if error or number of tasks pushed
 int
 gas_push_task (gas_client_info *ci)
 {
@@ -113,7 +113,7 @@ gas_push_task (gas_client_info *ci)
 		td->max_tasks += GAS_BLOCK_SIZE;
 		if (realloc ((void *)td->tasks, td->max_tasks) == NULL) {
 			gas_error_message("No memory (realloc)\n");
-			return -1;
+			return GAS_ERROR;
 		}
 	}
 	td->tasks[td->first_free_task++].ci = ci;
@@ -138,14 +138,14 @@ gas_pop_task ()
 	return ci;
 }
 
-// return -1 if error or number of tasks enqueued
+// return GAS_ERROR if error or number of tasks enqueued
 int
 gas_enqueue_task (gas_client_info *ci)
 {
 	int ntasks;
 	GAS_THREADS_INFO *ti = (GAS_THREADS_INFO *)ci->tpi;
 	if (!ti->allow_tasks)
-		return -1;
+		return GAS_ERROR;
 	gas_debug_message (GAS_CLIENT, "Task push\n");
 
 	if (gas_get_running_task_threads() < 1)
@@ -154,7 +154,7 @@ gas_enqueue_task (gas_client_info *ci)
 	ntasks = gas_push_task(ci);
 	pthread_mutex_unlock(&td->lock);
 	if (ntasks < 0)
-		return -1;
+		return GAS_ERROR;
 	pthread_cond_signal(&td->cond);
 	return ntasks;
 }
@@ -234,7 +234,7 @@ void gas_test_tasks () {
 int
 gas_enqueue_task (gas_client_info *ci)
 {
-	return -1;
+	return GAS_ERROR;
 }
 
 
