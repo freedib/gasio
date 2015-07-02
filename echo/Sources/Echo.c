@@ -13,7 +13,7 @@ void client_callback (gas_client_info *ci, int op) {
 }
 
 int main (int argc, char *const argv[]) {
-    int port = 8080;
+    int port = 8000;
     void* server;
 
     if (gas_init_servers() < 0)
@@ -126,7 +126,7 @@ int main (int argc, char *const argv[])
 #endif
 
 #ifdef WIN32
-	// À ôter en mode production
+	// ï¿½ ï¿½ter en mode production
 	setvbuf (stdout, NULL, _IONBF, 0);
 	setvbuf (stderr, NULL, _IONBF, 0);
 #endif
