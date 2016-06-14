@@ -13,6 +13,9 @@ To work with standalone makefiles
 - copy the Debug and Release directories from the Configuration directory in root directory (same level as Sources)
 - go either in Debug or Release and just type make
 
+Required libraries (if new project from scratch)
+- on Windows, required libraries are **ws2_32** and **winsock**
+
 Binaries
 - gasio is a shared library. no installation script is provided. to install, just copy it in a standard library directory (/usr/local/lib or \windows)
 - echo is linked over libgasio

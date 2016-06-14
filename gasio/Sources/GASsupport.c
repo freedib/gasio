@@ -38,7 +38,7 @@ gas_error_message (const char *format, ...)
 	va_end (args);
 	return GAS_ERROR;			// arg for exit on fatal errors
 
-	// évaluer __LINE__: fprintf (stderr, "Error %d in CreateIoCompletionPort in line %d\n", err, __LINE__));
+	// Consider __LINE__: fprintf (stderr, "Error %d in CreateIoCompletionPort in line %d\n", err, __LINE__));
 }
 
 
@@ -73,12 +73,12 @@ void gas_reset_stats () {
 	gettimeofday(&previous_time, NULL);
 }
 void gas_adjust_stats () {
-    __sync_fetch_and_add(&packet_count, 1);
+	atomic_add_ulong(&packet_count, 1);
 }
 void gas_compute_stats () {
-	int count = __sync_fetch_and_add(&packet_count, 0);
+	unsigned long count = atomic_add_ulong(&packet_count, 0);
 	if (count > 10000) {
-	    count = __sync_fetch_and_and(&packet_count, 0);
+	    count = atomic_and_ulong(&packet_count, 0);
 		gettimeofday(&present_time, NULL);
 
 		long long present_time_ms  = ((long long)present_time.tv_sec)*1000  + present_time.tv_usec/1000;
@@ -115,3 +115,33 @@ gas_get_processors_count ()
 
 #endif // WIN32
 
+
+////////////////  ATOMIC OPERATIONS  ////////////////
+
+
+#ifdef __ARM__
+// implementation of __sync_fetch_and_add_4 for ARM processors
+unsigned int
+add_uint (unsigned volatile int *var, int val)
+{
+	unsigned volatile int v = *var;
+	*var = val;
+	return v;
+}
+unsigned long
+add_ulong (unsigned volatile long *var, int val)
+{
+	unsigned volatile long v = *var;
+	*var = val;
+	return v;
+}
+
+// implementation of __sync_fetch_and_add_4 for ARM processors
+unsigned long
+and_ulong (unsigned volatile long *var, int val)
+{
+	unsigned volatile long v = *var;
+	*var &= val;
+	return v;
+}
+#endif	// __ARM__

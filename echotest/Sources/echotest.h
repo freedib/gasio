@@ -3,7 +3,7 @@
 #define _ECHOTEST_H_
 
 
-#define PORT "8000" // the port client will be connecting to
+#define PORT "8080" // the port client will be connecting to
 
 #define MAXDATASIZE (100) // max number of bytes we can get at once
 
@@ -37,7 +37,7 @@ _STRUCT_TIMESPEC {
 #endif // __MACH__
 
 #ifdef WIN32
-#if !defined __timespec_defined
+#if !defined __timespec_defined && !defined __struct_timespec_defined
 struct timespec {
 	long int tv_sec;                 /* seconds */
 	long int tv_nsec;                /* nanoseconds */

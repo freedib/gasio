@@ -8,27 +8,27 @@
 
 // default callback. do an echo
 void client_callback (gas_client_info *ci, int op) {
-    if (op==GAS_CLIENT_READ)
-        gas_write_message (ci, gas_get_buffer_data (ci->rb));
+	if (op==GAS_CLIENT_READ)
+		gas_write_message (ci, gas_get_buffer_data (ci->rb));
 }
 
 int main (int argc, char *const argv[]) {
-    int port = 8000;
-    void* server;
+	int port = 8080;
+	void* server;
 
-    if (gas_init_servers() < 0)
-        return 1;
-    if ((server = gas_create_server (NULL, NULL, port, NULL, client_callback, 0)) == NULL)
-        return 1;
-    if (! gas_start_server (server))
-        return 1;
+	if (gas_init_servers() < 0)
+		return 1;
+	if ((server = gas_create_server (NULL, NULL, port, NULL, client_callback, 0)) == NULL)
+		return 1;
+	if (! gas_start_server (server))
+		return 1;
 
-    while (fgetc(stdin) != '!')     // accept messages until user press !
-        ;
+	while (fgetc(stdin) != '!')     // accept messages until user press !
+		;
 
-    gas_stop_server (server);
+	gas_stop_server (server);
 
-    return 0;
+	return 0;
 }
 
 

@@ -7,6 +7,10 @@
 #ifndef _GAS_NETWORKS_H_
 #define _GAS_NETWORKS_H_
 
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(WIN32)
+#include <sys/socket.h>	// for generic platform
+#endif
+
 #include "GASdefinitions.h"
 
 

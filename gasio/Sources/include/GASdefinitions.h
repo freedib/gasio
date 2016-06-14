@@ -76,4 +76,14 @@ typedef void *    gas_callback_t;
 
 #endif // WIN32
 
+#ifdef __ARM__
+#define atomic_add_uint  add_uint
+#define atomic_add_ulong add_ulong
+#define atomic_and_ulong and_ulong
+#else
+#define atomic_add_uint  __sync_fetch_and_add
+#define atomic_add_ulong __sync_fetch_and_add
+#define atomic_and_ulong __sync_fetch_and_and
+#endif	// __ARM__
+
 #endif // _GAS_DEFINITIONS_H_

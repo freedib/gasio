@@ -104,7 +104,7 @@ __stdcall gas_callback_t
 gas_worker_thread (void *tpi)
 {
 	GAS_THREADS_INFO *ti = (GAS_THREADS_INFO *) tpi;
-	int thread_id = __sync_fetch_and_add(&ti->running_threads, 1);
+	int thread_id = atomic_add_uint(&ti->running_threads, 1);
 
 #ifdef __linux__
 	// to awake accept if linux
@@ -135,7 +135,7 @@ gas_worker_thread (void *tpi)
 		}
 	}
 
-	__sync_fetch_and_add(&ti->running_threads, -1);
+	atomic_add_uint(&ti->running_threads, -1);
 	return (gas_callback_t) 0;
 }
 

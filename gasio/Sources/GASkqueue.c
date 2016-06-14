@@ -162,8 +162,9 @@ gas_event_loop (void *tpi)
 			gas_client_info *ci = (gas_client_info *) GAS_DATA(pev);
 			if (ci==NULL)
 				break;
-			gas_debug_message (GAS_IO, "event socket=%d, ci=%6x, ev=%s, op=%s\n",
-					ci->socket, ci, gas_name_event(GAS_EV(pev)), gas_name_operation(GAS_OP(pev)));
+			gas_debug_message (GAS_IO, "event socket=%d, ci=%6x, ev=%s, op=%s, flags=%s%s\n",
+					ci->socket, ci, gas_name_event(GAS_EV(pev)), gas_name_operation(GAS_OP(pev)),
+					(pev->flags&EV_DELETE)?"DELETE ":"", (pev->flags&EV_ERROR)?"ERROR ":"");
 			if (GAS_IGNORE_EV(pev))
 				continue;
 			if (GAS_FALSE_EOF_EV(pev))

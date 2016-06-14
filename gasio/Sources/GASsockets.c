@@ -7,7 +7,8 @@
 #include <winsock2.h>
 #include <windows.h>
 #else
-#include <netdb.h>		// hostent
+#include <sys/socket.h>		// for generic platforms
+#include <netdb.h>			// hostent
 #endif
 
 #include "GASdefinitions.h"
@@ -166,7 +167,7 @@ gas_do_accept (void *tpi, gas_socket_t server_socket)
 	gas_do_callback (ci, GAS_CLIENT_CREATE);
 
 	gas_debug_message (GAS_IO, "accept:: socket=%d, ci=%6x\n", client_socket, ci);
-#ifndef WIN32
+#if defined(__APPLE__) || defined(__linux__)
 	if (ti->clients_are_non_blocking)
 		gas_add_client_to_poll (ci);
 #endif
@@ -239,8 +240,9 @@ gas_do_write (gas_client_info *ci)
 		gas_debug_message (GAS_IO, "send::>> socket=%d, ci=%6x, n=%d, errno=%d\n", ci->socket, ci, size, errno);
 		if (size < 0) {
 			if (errno == EAGAIN) {
-				gas_error_message("send: EAGAIN\n");
+				gas_debug_message (GAS_IO, "send: EAGAIN\n");
 				if (ci->use_write_events) {
+					gas_debug_message (GAS_IO, "send: write pending\n");
 					ci->can_write = GAS_FALSE;
 					ci->write_pending = GAS_TRUE;
 				}

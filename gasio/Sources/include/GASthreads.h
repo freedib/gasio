@@ -29,7 +29,7 @@ typedef struct {
 	// specific
 	int worker_threads;
 	gas_thread_t *threads;
-	volatile unsigned running_threads;
+	unsigned volatile running_threads;
 } GAS_THREADS_INFO;
 
 

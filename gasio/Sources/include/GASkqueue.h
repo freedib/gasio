@@ -1,5 +1,5 @@
 
-///////////////  IMPLƒEMENTATION OF KQUEUE  ////////////////
+///////////////  IMPLï¿½EMENTATION OF KQUEUE  ////////////////
 
 #ifndef _GAS_KQUEUE_H_
 #define _GAS_KQUEUE_H_
@@ -43,7 +43,7 @@ typedef struct kevent gas_poll_event;
 #define GAS_DATA(pev) (pev->udata)
 #define GAS_READ_EV(pev) (pev->filter == EVFILT_READ)
 #define GAS_WRITE_EV(pev) (pev->filter == EVFILT_WRITE)
-#define GAS_IGNORE_EV(pev) ((pev->flags&EV_DELETE) | ((pev->filter==EVFILT_WRITE) | (pev->flags&EV_ERROR)))
+#define GAS_IGNORE_EV(pev) ((pev->flags&EV_DELETE) | ((pev->filter==EVFILT_WRITE) & (pev->flags&EV_ERROR)))
 #define GAS_TRUE_EOF_EV(pev) (pev->flags & EV_EOF)
 #define GAS_FALSE_EOF_EV(pev) (pev->flags & EV_EOF)
 
