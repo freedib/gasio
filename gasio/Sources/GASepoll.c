@@ -172,6 +172,8 @@ gas_event_loop (void *tpi)
 					ci->socket, ci, gas_name_event(GAS_EV(pev)), gas_name_operation(GAS_OP(pev)));
 			if (GAS_IGNORE_EV(pev))
 				continue;
+			if (ci->socket==-1)		// event after closing socket
+				continue;
 			if (GAS_FALSE_EOF_EV(pev))
 				ci->read_end = GAS_TRUE;
 			else if (ci == pi->accept_ci)
@@ -191,7 +193,7 @@ gas_event_loop (void *tpi)
 					if (ci->can_write && ci->step >= 0)
 						gas_do_callback (ci, GAS_CLIENT_WRITE);
 			}
-			if (ci->error || ((ci->read_end && GAS_CI_DATA_SIZE(ci->rb)==0) /*&& GAS_CI_DATA_SIZE(ci->wb)==0*/)) {
+			if (ci->error || ((ci->read_end && GAS_CI_GET_DATA_SIZE(ci->rb)==0) /*&& GAS_CI_GET_DATA_SIZE(ci->wb)==0*/)) {
 				gas_debug_message (GAS_IO, "close socket=%d, ci=%6x, ev=%s, op=%s\n",
 						ci->socket, ci, gas_name_event(GAS_EV(pev)), gas_name_operation(GAS_OP(pev)));
 				gas_remove_client_from_poll (ci);
@@ -239,6 +241,10 @@ void gas_remove_client_from_poll (gas_client_info *ci) {
 
 void gas_change_poll (gas_client_info *ci, int operation, int events)
 {
+	if (ci->socket<0) {
+		gas_error_message ("Socket (-1) is invalid in gas_change_poll (ci=%6x)\n", ci);
+		return;
+	}
 	gas_poll_event pe;
   	gas_debug_message (GAS_IO, "gas_change_poll socket=%d, ci=%6x, ev=%s, op=%s\n",
   		ci->socket, ci, gas_name_event(events), gas_name_operation(operation));

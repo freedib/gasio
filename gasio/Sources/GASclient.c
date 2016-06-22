@@ -207,9 +207,9 @@ char *
 gas_realloc_buffer_for (gas_client_buffer* cb, int size)
 {
 	char *buffer;
-	if (GAS_CI_BUFFER_SPACE(cb) > size)
+	if (GAS_CI_GET_FREE_SPACE(cb) > size)
 		return cb->buffer;				// enough space
-	cb->allocated += size - GAS_CI_BUFFER_SPACE(cb);
+	cb->allocated += size - GAS_CI_GET_FREE_SPACE(cb);
 	if (cb->limit>0 && cb->allocated>cb->limit)
 		cb->allocated = cb->limit;
 	buffer = (char*)realloc(cb->buffer, cb->allocated+1);
@@ -225,11 +225,11 @@ gas_append_buffer (gas_client_buffer* cb, char* string)
 {
 	int size = strlen(string);
 	gas_realloc_buffer_for (cb, size);
-	if (size > GAS_CI_BUFFER_SPACE(cb))
+	if (size > GAS_CI_GET_FREE_SPACE(cb))
 		size = cb->allocated-cb->tail;		// was not able to allocate new buffer
-	strncpy (GAS_CI_BUFFER_END(cb), string, size);
-	GAS_CI_GROW_BUFFER (cb, size);
-	*GAS_CI_BUFFER_END(cb) = '\0';				// if string was trimmed
+	strncpy (GAS_CI_GET_DATA_TAIL(cb), string, size);
+	GAS_CI_SLIDE_TAIL (cb, size);
+	*GAS_CI_GET_DATA_TAIL(cb) = '\0';				// if string was trimmed
 }
 
 char* gas_get_buffer_data (gas_client_buffer *cb)

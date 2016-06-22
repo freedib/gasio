@@ -75,6 +75,7 @@ gas_create_socket ()
 gas_socket_t
 gas_close_socket (gas_socket_t a_socket)
 {
+//	gas_debug_message (GAS_IO, "gas_close_socket(%d)\n", a_socket);
 	if (a_socket >= 0)
 #ifdef WIN32
 		closesocket (a_socket);
@@ -182,10 +183,10 @@ gas_do_read (gas_client_info *ci)
 	int size;
 
 	gas_trim_buffer (ci->rb);
-	GAS_CI_MARK_END (ci->rb);
+	GAS_CI_SET_MARK_AT_TAIL (ci->rb);
 
 	do {
-		size = recv (ci->socket, GAS_CI_BUFFER_END(ci->rb), GAS_CI_BUFFER_SPACE(ci->rb), 0);
+		size = recv (ci->socket, GAS_CI_GET_DATA_TAIL(ci->rb), GAS_CI_GET_FREE_SPACE(ci->rb), 0);
 		gas_debug_message (GAS_IO, "recv::<< socket=%d, ci=%6x, n=%d, errno=%d\n", ci->socket, ci, size, errno);
 		if (size < 0) {
 			if (errno == EAGAIN) {
@@ -201,15 +202,15 @@ gas_do_read (gas_client_info *ci)
 			ci->read_end = GAS_TRUE;
 			return 0;
 		}
-		GAS_CI_GROW_BUFFER (ci->rb, size);
-		*GAS_CI_BUFFER_END(ci->rb) = '\0';		// recv don't terminate buffer with '\0'
+		GAS_CI_SLIDE_TAIL (ci->rb, size);
+		*GAS_CI_GET_DATA_TAIL(ci->rb) = '\0';		// recv don't terminate buffer with '\0'
 		gas_realloc_buffer (ci->rb);
-		gas_debug_message (GAS_DETAIL, "recv::<< \"%s\"\n", GAS_CI_BUFFER_MARK(ci->rb));
+		gas_debug_message (GAS_DETAIL, "recv::<< \"%s\"\n", GAS_CI_GET_DATA_MARK(ci->rb));
 	} while (ti->clients_are_non_blocking);
 
 	gas_adjust_stats();
 
-	return GAS_CI_DATA_SIZE(ci->rb);
+	return GAS_CI_GET_DATA_SIZE(ci->rb);
 }
 
 int
@@ -224,15 +225,15 @@ gas_do_write (gas_client_info *ci)
 	ci->callback_has_written = GAS_TRUE;
 	int written = 0;
 	gas_client_buffer *cb = ci->use_eb? ci->eb: ci->wb;
-	GAS_CI_MARK_START (cb);
+	GAS_CI_SET_MARK_AT_HEAD (cb);
 
-	while (GAS_CI_DATA_SIZE(cb) > 0) {
+	while (GAS_CI_GET_DATA_SIZE(cb) > 0) {
 #ifndef WIN32
 		GAS_THREADS_INFO *ti = (GAS_THREADS_INFO *)ci->tpi;
 		if (ti->clients_are_non_blocking && !ci->use_write_events)
 			gas_block_socket (ci->socket, GAS_TRUE);				// tweak when output don't use events
 #endif // WIN32
-		int size = send (ci->socket, GAS_CI_BUFFER_START(cb), GAS_CI_DATA_SIZE(cb), 0);
+		int size = send (ci->socket, GAS_CI_GET_DATA_HEAD(cb), GAS_CI_GET_DATA_SIZE(cb), 0);
 #ifndef WIN32
 		if (ti->clients_are_non_blocking && !ci->use_write_events)
 			gas_block_socket (ci->socket, GAS_FALSE);				// tweak when output don't use events
@@ -253,16 +254,16 @@ gas_do_write (gas_client_info *ci)
 			ci->error = GAS_TRUE;
 			return written;
 		}
-		GAS_CI_WANE_BUFFER (cb, size);
+		GAS_CI_SLIDE_HEAD (cb, size);
 		written += size;
-		gas_debug_message (GAS_DETAIL, "send::>> \"%s\"\n", GAS_CI_BUFFER_MARK(cb));
-		if (GAS_CI_DATA_SIZE(cb) > 0)
+		gas_debug_message (GAS_DETAIL, "send::>> \"%s\"\n", GAS_CI_GET_DATA_MARK(cb));
+		if (GAS_CI_GET_DATA_SIZE(cb) > 0)
 			gas_debug_message (GAS_IO, "send: written=%d: head=%d, mark=%d, tail=%d\n",
 					written, cb->head, cb->mark, cb->tail);
 	}
 	if (gas_trim_buffer(cb) == 0)
 		ci->use_eb = GAS_FALSE;
-	if (GAS_CI_DATA_SIZE(cb) == 0)
+	if (GAS_CI_GET_DATA_SIZE(cb) == 0)
 		ci->write_pending = GAS_FALSE;
 	return written;
 }

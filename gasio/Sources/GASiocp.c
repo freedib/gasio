@@ -259,13 +259,13 @@ gas_start_reading (gas_client_info *ci)
 	DWORD flags=0, bytes=0;
 
 	gas_trim_buffer (ci->rb);
-	GAS_CI_MARK_END (ci->rb);
+	GAS_CI_SET_MARK_AT_TAIL (ci->rb);
 
 	if (ci->overlapped!=NULL) {
 		memset(ci->overlapped, 0, sizeof(WSAOVERLAPPED));
 		ci->operation = GAS_OP_READ;
 	}
-	WSABUF wsabuf = { GAS_CI_BUFFER_SPACE(ci->rb), GAS_CI_BUFFER_END(ci->rb) };
+	WSABUF wsabuf = { GAS_CI_GET_FREE_SPACE(ci->rb), GAS_CI_GET_DATA_TAIL(ci->rb) };
 
 	if (WSARecv(ci->socket, &wsabuf, 1, &bytes, &flags, (WSAOVERLAPPED *)ci->overlapped, NULL) == SOCKET_ERROR) {
 		ci->error = GAS_TRUE;
@@ -283,10 +283,10 @@ gas_read_completed (gas_client_info *ci, BOOL resultOk, DWORD size)
 	if (resultOk) {
 		if (size > 0) {
 			gas_debug_message (GAS_IO, "Read operation completed, %d bytes read\n", (int)size);
-			GAS_CI_GROW_BUFFER (ci->rb, size);
-			*GAS_CI_BUFFER_END(ci->rb) = '\0';		// recv don't terminate buffer with '\0'
+			GAS_CI_SLIDE_TAIL (ci->rb, size);
+			*GAS_CI_GET_DATA_TAIL(ci->rb) = '\0';		// recv don't terminate buffer with '\0'
 			gas_realloc_buffer (ci->rb);
-			gas_debug_message (GAS_DETAIL, "WSARecv::<< \"%s\"\n", GAS_CI_BUFFER_MARK(ci->rb));
+			gas_debug_message (GAS_DETAIL, "WSARecv::<< \"%s\"\n", GAS_CI_GET_DATA_MARK(ci->rb));
 			gas_adjust_stats();
 			gas_do_callback (ci, GAS_CLIENT_READ);		// will start another write
 			if (!ci->callback_has_written || !ci->use_write_events)
@@ -316,13 +316,13 @@ gas_start_writing (gas_client_info *ci)
 	gas_debug_message (GAS_IO, "gas_start_writing can_write<-%d\n", ci->can_write);
 
 	gas_client_buffer *cb = ci->use_eb? ci->eb: ci->wb;
-	GAS_CI_MARK_START (cb);
+	GAS_CI_SET_MARK_AT_HEAD (cb);
 
 	if (ci->overlapped!=NULL) {
 		memset(ci->overlapped, 0, sizeof(WSAOVERLAPPED));
 		ci->operation = GAS_OP_WRITE;
 	}
-	WSABUF wsabuf = { GAS_CI_DATA_SIZE(cb), GAS_CI_BUFFER_MARK(cb) };
+	WSABUF wsabuf = { GAS_CI_GET_DATA_SIZE(cb), GAS_CI_GET_DATA_MARK(cb) };
 
 	if (WSASend(ci->socket, &wsabuf, 1, &bytes, 0, (WSAOVERLAPPED *)ci->overlapped, NULL) == SOCKET_ERROR) {
 		ci->error = GAS_TRUE;
@@ -332,7 +332,7 @@ gas_start_writing (gas_client_info *ci)
 	}
 	else
 		gas_debug_message (GAS_IO, "Immediate write\n");
-	gas_debug_message (GAS_DETAIL, "WSASend::>> \"%s\"\n", GAS_CI_BUFFER_START(cb));
+	gas_debug_message (GAS_DETAIL, "WSASend::>> \"%s\"\n", GAS_CI_GET_DATA_HEAD(cb));
 }
 
 void
@@ -342,7 +342,7 @@ gas_write_completed (gas_client_info *ci, BOOL resultOk, DWORD size)
 	if (resultOk) {
 		if (size > 0) {
 			ci->can_write = GAS_TRUE;
-			GAS_CI_WANE_BUFFER (cb, size);
+			GAS_CI_SLIDE_HEAD (cb, size);
 			if (gas_trim_buffer(cb) > 0) {
 				gas_debug_message (GAS_IO, "Write incomplete\n");
 				gas_start_writing (ci); // starts another write

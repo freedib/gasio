@@ -24,19 +24,19 @@ enum // callback operation
 };
 
 
-#define GAS_CI_BUFFER_START(cb)     (cb->buffer + cb->head)
-#define GAS_CI_BUFFER_MARK(cb)      (cb->buffer + cb->mark)
-#define GAS_CI_BUFFER_END(cb)       (cb->buffer + cb->tail)
-#define GAS_CI_DATA_SIZE(cb)        (cb->tail - cb->head)
-#define GAS_CI_BUFFER_SPACE(cb)     (cb->allocated - cb->tail)
-#define GAS_CI_GROWED_SIZE(cb)      (cb->tail - cb->mark)
-#define GAS_CI_WANED_SIZE(cb)       (cb->head - cb->mark)
-#define GAS_CI_GROW_BUFFER(cb,n)    (cb->tail += n)
-#define GAS_CI_WANE_BUFFER(cb,n)    (cb->head += n)
-#define GAS_CI_SIZE_BUFFER(cb,n)    (cb->tail = n)
-#define GAS_CI_CLEAR_BUFFER(cb)     (cb->head = cb->mark = cb->tail = 0)
-#define GAS_CI_MARK_START(cb)       (cb->mark = cb->head)
-#define GAS_CI_MARK_END(cb)         (cb->mark = cb->tail)
+#define GAS_CI_GET_DATA_HEAD(cb)       (cb->buffer + cb->head)
+#define GAS_CI_GET_DATA_MARK(cb)       (cb->buffer + cb->mark)
+#define GAS_CI_GET_DATA_TAIL(cb)       (cb->buffer + cb->tail)
+#define GAS_CI_GET_DATA_SIZE(cb)       (cb->tail - cb->head)
+#define GAS_CI_GET_FREE_SPACE(cb)      (cb->allocated - cb->tail)
+#define GAS_CI_GET_INCREASED_SIZE(cb)  (cb->tail - cb->mark)
+#define GAS_CI_GET_DECREASED_SIZE(cb)  (cb->head - cb->mark)
+#define GAS_CI_SLIDE_HEAD(cb,n)        (cb->head += n)
+#define GAS_CI_SLIDE_TAIL(cb,n)        (cb->tail += n)
+#define GAS_CI_SET_DATA_TAIL(cb,n)     (cb->tail = n)
+#define GAS_CI_CLEAR_BUFFER(cb)        (cb->head = cb->mark = cb->tail = 0)
+#define GAS_CI_SET_MARK_AT_HEAD(cb)    (cb->mark = cb->head)
+#define GAS_CI_SET_MARK_AT_TAIL(cb)    (cb->mark = cb->tail)
 
 typedef struct GAS_CLIENT_INFO   gas_client_info;
 typedef struct GAS_CLIENT_BUFFER gas_client_buffer;
