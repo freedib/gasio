@@ -1,4 +1,9 @@
 
+
+#ifndef WIN32
+#include <signal.h>
+#endif	// WIN32
+
 #include "GAStasks.h"
 #include "GASsockets.h"
 #include "GASthreads.h"
@@ -21,6 +26,9 @@ gas_create_server (void* parent, char* address, int port, char* networks, void (
 {
 	if (callback==NULL)
 		return NULL;
+#ifndef WIN32
+	signal(SIGPIPE, SIG_IGN);
+#endif	// WIN32
 	if (worker_threads > 0)
 		return gas_create_threads (parent, address, port, networks, callback, worker_threads);
 	else

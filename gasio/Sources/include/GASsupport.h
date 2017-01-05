@@ -26,7 +26,7 @@ void gas_compute_stats ();
 
 int  gas_get_processors_count ();
 
-#ifdef __ARM__
+#if defined(__ARM__) || defined(__X86__)
 unsigned int  add_uint  (unsigned volatile int  *var, int val);
 unsigned long add_ulong (unsigned volatile long *var, int val);
 unsigned long and_ulong (unsigned volatile long *var, int val);

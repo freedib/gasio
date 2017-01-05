@@ -119,7 +119,7 @@ gas_get_processors_count ()
 ////////////////  ATOMIC OPERATIONS  ////////////////
 
 
-#ifdef __ARM__
+#if defined(__ARM__) || defined(__X86__)
 // implementation of __sync_fetch_and_add_4 for ARM processors
 unsigned int
 add_uint (unsigned volatile int *var, int val)

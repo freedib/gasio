@@ -76,7 +76,7 @@ typedef void *    gas_callback_t;
 
 #endif // WIN32
 
-#ifdef __ARM__
+#if defined(__ARM__) || defined(__X86__)
 #define atomic_add_uint  add_uint
 #define atomic_add_ulong add_ulong
 #define atomic_and_ulong and_ulong

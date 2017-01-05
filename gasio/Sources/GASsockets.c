@@ -250,7 +250,7 @@ gas_do_write (gas_client_info *ci)
 				break;
 			}
 			if (!((GAS_THREADS_INFO *)ci->tpi)->stop)
-				gas_error_message("send: %s\n", strerror (errno));
+				gas_error_message("send: %d - %s\n", errno, strerror (errno));
 			ci->error = GAS_TRUE;
 			return written;
 		}
